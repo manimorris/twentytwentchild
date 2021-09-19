@@ -6,7 +6,7 @@
   * Table of contents:
   * -------------------
   * Register styles
-  *
+  * Theme setup
   */
 
 
@@ -22,3 +22,16 @@ function child_theme_enqueue_styles() {
     wp_enqueue_style( 'child-style', get_stylesheet_uri(), array( $parenthandle ));
 }
 
+/* Some theme setups */
+add_action( 'after_setup_theme', 'twentytwenty_child_setup' );
+function twentytwenty_child_setup() {
+
+    /* Make available for translation. not asked to,
+        but it's a good practice */
+    load_child_theme_textdomain( 'twentytwenty_child' );
+
+    /* Get the theme_new_user and load the code. this is `Part-3` of dev test :) */
+    get_template_part( 'includes/theme_new_user', 'new_user_part3' );
+
+
+}
