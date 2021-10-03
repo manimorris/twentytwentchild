@@ -55,7 +55,7 @@ function twentytwenty_child_setup() {
 
 }
 
-
+/** Cretates custom user and products */
 add_action( 'init', 'theme_custom_data' , 10);
 function theme_custom_data() {
 
@@ -66,6 +66,11 @@ function theme_custom_data() {
     /* This file will also add a grid list of these products to the home page using a shortcode */
     get_template_part( 'includes/theme_add_products', 'add_products_part4' );
 }
+
+/** Add custom address bar color for mobile browsers */
+add_action('wp_headers', function() {
+    echo '<meta name="theme-color" content="rgb(184, 180, 183)">';
+});
 
 
 /** Helper functions for this theme **/
@@ -82,4 +87,3 @@ function the_postmeta( $meta_key) {
 
 
 ?>
-

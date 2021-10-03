@@ -17,7 +17,7 @@ function products_grid_shortcode( $atts ) {
     ), $atts);
    
     // div should be with full width. (It lookes good also in 50% width)
-    $products_grid = '<div class="container grid " style="width:90%;min-width:90%;text-align:center;">';
+    $products_grid = '<div class="container grid " style="width:90%;min-width:90%;text-align:center;position:relative;">';
     $products_grid .= '<div class="row justify-content-md-center mb-4">';
         
     // get posts from DB.
@@ -63,41 +63,66 @@ function product_display_shortcode( $atts ) {
     // Remove atts keys with empty values.
     if(is_array($atts)) $atts = array_filter( $atts, 'ucfirst' );
 
-    // When no product id given as attr, return the latest product.
-    $args = array(
-        'post_type' =>'products',
-        'posts_per_page' => 1
-    );
-    $recent_post = wp_get_recent_posts($args, OBJECT);
-
     // set default attrs
     $a = shortcode_atts(array(
-        'product_id' => $recent_post[0]->ID,
+        'product_id' => '',
         'bg_color' => 'blue'
     ), $atts );
 
+    if (!$a['product_id']) return;
+
     // the output
-    $style = "max-width:20vw;border:2px solid ".$a['bg_color'].";background-color:". $a['bg_color'] .";";
+    $style = "min-width:20vw;border:2px solid ".$a['bg_color'].";background-color:". $a['bg_color'] .";";
+    $product_id = $a['product_id'];
+   
     ?>
-
-        <div class="col-xl-4 mb-3 p-4" style="<?php echo $style ?>">
-            <div class="card border-0 shadow" >
-                <a href="<?php the_permalink( $a['product_id'] ); ?>"  class="link-dark" >
-                    <img src="<?php echo get_the_post_thumbnail_url($a['product_id'], 'small') ?>" class="card-img-top" alt="..." >
-                    <div id="product-price" class="card-body bg-light  text-center link-dark" >
-                        <p>Price:
-                        <?php  echo get_post_meta($a['product_id'], '_products_price', true ) ?>
-                        </p>
-                        <h5 class="card-title mb-0 link-dark"><?php echo get_the_title($a['product_id']) ?></h5>
-                    </div>
-                </a>
-            </div>
+    <div class="col-xl-4 mb-3 p-4" style="<?php echo $style ?>">
+        <div class="card border-0 shadow" >
+            <a href="<?php the_permalink( $product_id ); ?>"  class="link-dark" >
+                <img src="<?php echo get_the_post_thumbnail_url($product_id, 'small') ?>" class="card-img-top" alt="..." >
+                <div id="product-price" class="card-body bg-light  text-center link-dark" >
+                    <p>Price:
+                    <?php  echo get_post_meta($product_id, '_products_price', true ) ?>
+                    </p>
+                    <h5 class="card-title mb-0 link-dark"><?php echo get_the_title($product_id) ?></h5>
+                </div>
+            </a>
         </div>
- 
+    </div>
     <?php
-
 }
 
+
+/** Custom filtering to the 'display_product' shortcode */
+// hook the custom callback function on the do_shortcode_tag action hook 
+add_action( 'do_shortcode_tag', 'update_shortcode_attr_and_output', 1, 4 );
+
+//callback function to filter and modify the usermeta shortcode attr & output
+function update_shortcode_attr_and_output( $output, $tag, $attr, $m ) {
+        //Filter the shortcode tag
+    if (  'display_product' != $tag ) { 
+        return;
+    } elseif (empty( $attr['product_id'])) {
+
+        // When no product id given as attr, return the latest product.
+        // set like this just for testing overriding the content.
+        $args = array(
+            'post_type' =>'products',
+            'posts_per_page' => 1
+        );
+        $recent_post = wp_get_recent_posts($args, OBJECT);
+        
+        // Update ShortCode Attribute product_id value
+        $attr['product_id'] = $recent_post[0]->ID;
+
+        
+        global $shortcode_tags;
+        $content = isset( $m[5] ) ? $m[5] : null;
+        $output = $m[1] . call_user_func( $shortcode_tags[ $tag ], $attr, $content, $tag ) . $m[6];
+        
+        return $output;
+    }        
+}
 
 /**Shortcodes helper FUNCTIONS */
 
