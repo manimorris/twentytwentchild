@@ -170,11 +170,6 @@ get_header();
 
 </main><!-- #site-content -->
 
-<?php 
-	//get_template_part( 'template-parts/footer-menus-widgets' );
-	//do_shortcode( '[products_grid called="1"]');
-?>
-
 <?php get_footer(); ?>
 
 
