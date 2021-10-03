@@ -13,7 +13,7 @@ get_header(); ?>
 
 <!-- Page Content -->
   <div class="container grid">
-    <div class="row"> 
+    <div class="row">
     
     <?php 
     // Here all the posts will be called

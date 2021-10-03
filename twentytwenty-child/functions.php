@@ -53,6 +53,9 @@ function twentytwenty_child_setup() {
     /* Add support for thumbnails  */
     add_theme_support( 'post-thumbnails' ); 
 
+    /* Register REST Api file */
+    $ret = get_template_part( 'includes/products_api', 'products_api_register' );
+
 }
 
 /** Cretates custom user and products */
@@ -87,3 +90,4 @@ function the_postmeta( $meta_key) {
 
 
 ?>
+
